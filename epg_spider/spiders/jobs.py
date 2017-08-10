@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import cx_Oracle
 import scrapy
 import json
-import cx_Oracle
+
 
 
 class JobsSpider(scrapy.Spider):
@@ -18,7 +19,9 @@ class JobsSpider(scrapy.Spider):
             # 只能读取规范后的json文件,json对象或者json数组
             json.load(json_file)
 
-    def getDataFromOracle(self):
+    def getConnection(self):
         # 获取数据库连接
-        # '用户名/密码/@数据库地址:端口号/ServiceName'
-        conn = cx_Oracle.connect('DTSS_DB_USER/DTSS_DB_USER/@10.4.124.88:1621/lhytbill')
+        # '用户名/密码@数据库地址:端口号/ServiceName'
+        return cx_Oracle.connect('DTSS_DB_USER/DTSS_DB_USER@10.4.124.88:1621/lhytbill')
+        # 或者
+        # return cx_Oracle.connect('DTSS_DB_USER', 'DTSS_DB_USER', '10.4.124.88:1621/lhytbill')
