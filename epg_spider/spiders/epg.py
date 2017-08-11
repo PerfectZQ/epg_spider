@@ -4,6 +4,7 @@ from epg_spider.items import EPGItem
 from epg_spider.oracle.db import OracleDB
 import scrapy
 import json
+import codecs
 
 
 class EPGSpider(scrapy.Spider):
@@ -38,13 +39,14 @@ class EPGSpider(scrapy.Spider):
     def parse(self, response):
         label_a = response.xpath("//h4/strong/a/text()").extract()
         if label_a:
-            program_type = label_a[0]
-            print(program_type)
+            program_type_str = label_a[0]
+            left_bracket_index = program_type_str.find('[')
+            right_bracket_index = program_type_str.find(']')
+            program_type = program_type_str[left_bracket_index + 1:right_bracket_index]
             program_name = response.meta['program']
-            epg = EPGItem()
-            epg['program_name'] = program_name
-            epg['program_type'] = program_type
-            print(epg['program_name'])
+            epg = EPGItem(program_name=program_name, program_type=program_type)
+            with open('../../data/program_type.json', 'a') as json_file:
+                json_file.write(json.dumps(dict(epg)))
 
     # 读取文件
     def readFile(self, path):
