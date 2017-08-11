@@ -12,11 +12,18 @@ class EPGSpider(scrapy.Spider):
     # 获取oracle数据库的连接
     conn = OracleDB.get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT DISTINCT PROGRAM FROM GDI_SI_EPG_HIS_T')
+    cursor.execute('SELECT DISTINCT PROGRAM FROM GDI_SI_EPG_HIS_T WHERE ROWNUM<50')
     dataIter = cursor.__iter__()
 
     # 如果指定了URL，spider会调用 make_requests_from_url() 方法来创建 Request 对象
     # start_urls = ['http://search.cctv.com/search.php?type=video&']
+
+    def __init__(self):
+        self.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept-Encoding': 'gzip, deflate',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        }
 
     # 必须返回一个可迭代的对象（Iterable），当没有指定URL是，spider会调用此函数。
     def start_requests(self):
