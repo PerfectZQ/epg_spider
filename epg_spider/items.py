@@ -8,7 +8,7 @@
 import scrapy
 
 
-class EpgSpiderItem(scrapy.Item):
+class EPGItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    program_name = scrapy.Field
+    program_type = scrapy.Field

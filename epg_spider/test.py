@@ -12,10 +12,19 @@ def getConnection():
 
 conn = getConnection()
 cursor = conn.cursor()
-cursor.execute('SELECT DISTINCT PROGRAM FROM GDI_SI_EPG_HIS_T')
-results = cursor.fetchall()
-# row是元组类型
-for row in results:
+cursor.execute('SELECT DISTINCT PROGRAM FROM GDI_SI_EPG_HIS_T WHERE ROWNUM<50')
+# results = cursor.fetchall()
+_iter = cursor.__iter__()
+for row in _iter:
     print(row[0])
+
+
+# row是元组类型
+# for row in results:
+#     print(row[0])
 cursor.close()
 conn.close()
+
+
+strs = 'http://search.cctv.com/search.php?qtext=%s&type=video' % '哈哈'
+print(strs)
