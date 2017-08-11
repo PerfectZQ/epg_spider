@@ -6,7 +6,6 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-import base64
 
 
 class EpgSpiderSpiderMiddleware(object):
@@ -57,7 +56,7 @@ class EpgSpiderSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class ProxyMiddleWare(object):
+class ProxyMiddleware(object):
     # overwrite process request
     def process_request(self, request, spider):
         # Set the location of the proxy

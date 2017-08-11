@@ -10,5 +10,5 @@ import scrapy
 
 class EPGItem(scrapy.Item):
     # define the fields for your item here like:
-    program_name = scrapy.Field
-    program_type = scrapy.Field
+    program_name = scrapy.Field()
+    program_type = scrapy.Field()

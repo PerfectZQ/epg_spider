@@ -18,10 +18,10 @@ NEWSPIDER_MODULE = 'epg_spider.spiders'
 # USER_AGENT = 'epg_spider (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -45,16 +45,16 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-    # 'epg_spider.middlewares.EpgSpiderSpiderMiddleware': 543,
-    'epg_spider.middlewares.ProxyMiddleWare': 1
-}
+# SPIDER_MIDDLEWARES = {
+#     # 'epg_spider.middlewares.EpgSpiderSpiderMiddleware': 543,
+# }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'epg_spider.middlewares.MyCustomDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    # 'epg_spider.middlewares.MyCustomDownloaderMiddleware': 543,
+    'epg_spider.middlewares.ProxyMiddleware': 10,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
