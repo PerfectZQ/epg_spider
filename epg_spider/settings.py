@@ -51,10 +51,10 @@ CONCURRENT_REQUESTS = 32
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
+# DOWNLOADER_MIDDLEWARES = {
     # 'epg_spider.middlewares.MyCustomDownloaderMiddleware': 543,
-    'epg_spider.middlewares.ProxyMiddleware': 10,
-}
+#     'epg_spider.middlewares.ProxyMiddleware': 10,
+# }
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

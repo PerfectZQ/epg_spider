@@ -4,7 +4,6 @@ from epg_spider.items import EPGItem
 from epg_spider.oracle.db import OracleDB
 import scrapy
 import json
-import codecs
 
 
 class EPGSpider(scrapy.Spider):
@@ -45,7 +44,7 @@ class EPGSpider(scrapy.Spider):
             program_type = program_type_str[left_bracket_index + 1:right_bracket_index]
             program_name = response.meta['program']
             epg = EPGItem(program_name=program_name, program_type=program_type)
-            with open('../../data/program_type.json', 'a') as json_file:
+            with open('../../data/program_type.json', 'a+') as json_file:
                 json_file.write(json.dumps(dict(epg)))
 
     # 读取文件
@@ -53,3 +52,6 @@ class EPGSpider(scrapy.Spider):
         with open(path, 'r')as json_file:
             # 只能读取规范后的json文件,json对象或者json数组
             json.load(json_file)
+
+    def write2DB(self):
+        pass
