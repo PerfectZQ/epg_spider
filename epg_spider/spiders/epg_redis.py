@@ -29,5 +29,5 @@ class EpgRedisSpider(RedisSpider):
                     os.path.dirname(
                         os.path.dirname(
                             os.path.realpath(__file__)))) + '/data/program_type.json'
-            with codecs.open(path, 'w+', 'utf-8') as json_file:
-                json_file.write(json.dumps(dict(epg)))
+            with codecs.open(path, 'a+', 'utf-8') as json_file:
+                json_file.write(json.dumps(dict(epg), ensure_ascii=False))
