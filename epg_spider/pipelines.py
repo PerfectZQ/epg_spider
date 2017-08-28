@@ -6,16 +6,12 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import requests
 import scrapy_redis
-from scrapy.utils.serialize import ScrapyJSONEncoder
 from twisted.internet.threads import deferToThread
 
 
 class EpgSpiderPipeline(object):
     def process_item(self, item, spider):
         return item
-
-
-default_serialize = ScrapyJSONEncoder().encode
 
 
 class ProxyPipeline(object):
