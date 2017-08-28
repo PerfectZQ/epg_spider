@@ -13,6 +13,9 @@ class EpgRedisSpider2(RedisSpider):
 
     def parse(self, response):
         # label_a = response.xpath("//h4/strong/a/text()").extract()
+        request = response.request
+        if 'proxy' in request.meta:
+            print('proxy address in spider 2 :' + request.meta['proxy'])
         label_a = response.xpath("//h4/strong/a")
         program_type_text = label_a.xpath("./text()").extract()
         program_name_text = label_a.xpath("./font/text()").extract()

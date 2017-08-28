@@ -12,7 +12,9 @@ class EpgRedisSpider(RedisSpider):
     redis_key = 'testepg'
 
     def parse(self, response):
-        # label_a = response.xpath("//h4/strong/a/text()").extract()
+        request = response.request
+        if 'proxy' in request.meta:
+            print('proxy address in spider 1 :' + request.meta['proxy'])
         label_a = response.xpath("//h4/strong/a")
         program_type_text = label_a.xpath("./text()").extract()
         program_name_text = label_a.xpath("./font/text()").extract()
@@ -22,7 +24,7 @@ class EpgRedisSpider(RedisSpider):
             right_bracket_index = program_type_str.find(']')
             program_type = program_type_str[left_bracket_index + 1:right_bracket_index]
             program_name = program_name_text[0]
-            print("spider 2 : " + program_name)
+            print("spider 1 : " + program_name)
             epg = EPGItem(program_name=program_name, program_type=program_type)
             path = \
                 os.path.dirname(
