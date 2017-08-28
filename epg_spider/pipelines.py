@@ -55,7 +55,7 @@ class ProxyPipeline(object):
         proxy = item['proxy_address']
         proxies = {'http': proxy}
         try:
-            """ 延迟大于1.5秒的代理就算超时 """
+            """ 延迟大于2秒的代理就算超时 """
             status_code = requests.get('http://search.cctv.com/', proxies=proxies, timeout=2).status_code
         except:
             print(proxy + ' connected catch Exception')
