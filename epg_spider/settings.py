@@ -21,7 +21,7 @@ NEWSPIDER_MODULE = 'epg_spider.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 256
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -30,18 +30,28 @@ CONCURRENT_REQUESTS = 32
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
+CONCURRENT_REQUESTS_PER_IP = 16
+# The amount of time (in secs) that the downloader will wait before timing out. Default: 180
+DOWNLOAD_TIMEOUT = 30
 
 # Disable cookies (enabled by default)
-# COOKIES_ENABLED = False
+# 算是防爬策略之一，不启用cookies middleware，不想web server发送cookies
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-# TELNETCONSOLE_ENABLED = False
+TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-# DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-# }
+DEFAULT_REQUEST_HEADERS = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, sdch',
+    'Accept-Language': 'zh-CN,zh;q=0.8',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'Host': 'search.cctv.com',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+}
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
@@ -51,10 +61,23 @@ CONCURRENT_REQUESTS = 32
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-    # 'epg_spider.middlewares.MyCustomDownloaderMiddleware': 543,
-#     'epg_spider.middlewares.ProxyMiddleware': 10,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    # 'epg_spider.middlewares.EpgSpiderMiddleware': 543,
+    'epg_spider.middlewares.ProxyMiddleware': 125,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 542,
+}
+
+# IP代理池，List，不能使用set集合，是因为使用 random.choince() 会出现
+# TypeError: 'set' object does not support indexing
+IPPOOL = [
+    "124.239.177.85:8080",
+    "182.90.92.212:8123",
+    "117.12.168.206:53281",
+    "222.243.213.117:53281",
+    "175.16.65.24:80",
+    "110.73.4.185:8123",
+    "27.211.133.19:8118"
+]
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -104,34 +127,35 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 # bytes as values. Because of this reason the json or msgpack module will not
 # work by default. In python 2.x there is no such issue and you can use
 # 'json' or 'msgpack' as serializers.
-#SCHEDULER_SERIALIZER = "scrapy_redis.picklecompat"
+# SCHEDULER_SERIALIZER = "scrapy_redis.picklecompat"
 
 # Don't cleanup redis queues, allows to pause/resume crawls.
-#SCHEDULER_PERSIST = True
+SCHEDULER_PERSIST = False
 
 # Schedule requests using a priority queue. (default)
-#SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
+# SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
 
 # Alternative queues.
-#SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.FifoQueue'
-#SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.LifoQueue'
+# SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.FifoQueue'
+# SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.LifoQueue'
 
 # Max idle time to prevent the spider from being closed when distributed crawling.
 # This only works if queue class is SpiderQueue or SpiderStack,
 # and may also block the same time when your spider start at the first time (because the queue is empty).
-#SCHEDULER_IDLE_BEFORE_CLOSE = 10
+# SCHEDULER_IDLE_BEFORE_CLOSE = 10
 
 # Store scraped item in redis for post-processing.
 ITEM_PIPELINES = {
-    'scrapy_redis.pipelines.RedisPipeline': 300
+    # 'scrapy_redis.pipelines.RedisPipeline': 300,
+    'epg_spider.pipelines.ProxyPipeline': 300
 }
 
 # The item pipeline serializes and stores the items in this redis key.
-#REDIS_ITEMS_KEY = '%(spider)s:items'
+# REDIS_ITEMS_KEY = '%(spider)s:items'
 
 # The items serializer is by default ScrapyJSONEncoder. You can use any
 # importable path to a callable object.
-#REDIS_ITEMS_SERIALIZER = 'json.dumps'
+# REDIS_ITEMS_SERIALIZER = 'json.dumps'
 
 # Specify the host and port to use when connecting to Redis (optional).
 REDIS_HOST = '127.0.0.1'
@@ -139,21 +163,22 @@ REDIS_PORT = 7001
 
 # Specify the full Redis URL for connecting (optional).
 # If set, this takes precedence over the REDIS_HOST and REDIS_PORT settings.
-#REDIS_URL = 'redis://user:pass@hostname:9001'
+# REDIS_URL = 'redis://user:pass@hostname:9001'
+# REDIS_URL = 'redis://127.0.0.1:7001'
 
 # Custom redis client parameters (i.e.: socket timeout, etc.)
-#REDIS_PARAMS  = {}
+# REDIS_PARAMS  = {}
 # Use custom redis client class.
-#REDIS_PARAMS['redis_cls'] = 'myproject.RedisClient'
+# REDIS_PARAMS['redis_cls'] = 'myproject.RedisClient'
 
 # If True, it uses redis' ``SPOP`` operation. You have to use the ``SADD``
 # command to add URLs to the redis queue. This could be useful if you
 # want to avoid duplicates in your start urls list and the order of
 # processing does not matter.
-#REDIS_START_URLS_AS_SET = False
+# REDIS_START_URLS_AS_SET = False
 
 # Default start urls key for RedisSpider and RedisCrawlSpider.
-#REDIS_START_URLS_KEY = '%(name)s:start_urls'
+# REDIS_START_URLS_KEY = '%(name)s:start_urls'
 
 # Use other encoding than utf-8 for redis.
-#REDIS_ENCODING = 'latin1'
+# REDIS_ENCODING = 'latin1'

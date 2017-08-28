@@ -12,3 +12,7 @@ class EPGItem(scrapy.Item):
     # define the fields for your item here like:
     program_name = scrapy.Field()
     program_type = scrapy.Field()
+
+
+class ProxyAddress(scrapy.Item):
+    proxy_address = scrapy.Field()

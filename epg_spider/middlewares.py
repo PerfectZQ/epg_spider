@@ -4,11 +4,14 @@
 #
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import random
 
 from scrapy import signals
 
+from epg_spider.settings import IPPOOL
 
-class EpgSpiderSpiderMiddleware(object):
+
+class EpgSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -59,9 +62,10 @@ class EpgSpiderSpiderMiddleware(object):
 class ProxyMiddleware(object):
     # overwrite process request
     def process_request(self, request, spider):
+        # proxy = 'http://' + random.choice(IPPOOL)
         # Set the location of the proxy
         request.meta['proxy'] = "http://10.4.125.134:819"
-
+        # request.meta['proxy'] = proxy
         # Use the following lines if your proxy requires authentication
         # proxy_user_pass = "USERNAME:PASSWORD"
         # setup basic authentication for the proxy
