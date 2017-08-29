@@ -151,7 +151,7 @@ REDIS_PORT = 7001
 # Specify the full Redis URL for connecting (optional).
 # If set, this takes precedence over the REDIS_HOST and REDIS_PORT settings.
 # REDIS_URL = 'redis://user:pass@hostname:9001'
-# REDIS_URL = 'redis://127.0.0.1:7001'
+REDIS_URL = 'redis://10.4.121.202:6379'
 
 # Custom redis client parameters (i.e.: socket timeout, etc.)
 # REDIS_PARAMS  = {}
