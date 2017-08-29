@@ -4,18 +4,24 @@
 #
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
+
+import logging
+
+from twisted.internet import defer
+from twisted.internet.error import TimeoutError, DNSLookupError, \
+    ConnectionRefusedError, ConnectionDone, ConnectError, \
+    ConnectionLost, TCPTimedOutError
+from twisted.web.client import ResponseFailed
+
+from scrapy.core.downloader.handlers.http11 import TunnelError
 import random
 
 import scrapy_redis
 
-"""
 from scrapy import signals
 
-class EpgSpiderMiddleware(object):
-    # Not all methods need to be defined. If a method is not defined,
-    # scrapy acts as if the spider middleware does not modify the
-    # passed objects.
 
+class EpgSpiderMiddleware(object):
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -23,14 +29,15 @@ class EpgSpiderMiddleware(object):
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
-    def process_spider_input(response, spider):
+    def process_spider_input(self, response, spider):
         # Called for each response that goes through the spider
         # middleware and into the spider.
-
+        if spider.name in set('epgspider_redis', 'epgspider_redis2'):
+            print response.status
         # Should return None or raise an exception.
         return None
 
-    def process_spider_output(response, result, spider):
+    def process_spider_output(self, response, result, spider):
         # Called with the results returned from the Spider, after
         # it has processed the response.
 
@@ -38,7 +45,7 @@ class EpgSpiderMiddleware(object):
         for i in result:
             yield i
 
-    def process_spider_exception(response, exception, spider):
+    def process_spider_exception(self, response, exception, spider):
         # Called when a spider or process_spider_input() method
         # (from other spider middleware) raises an exception.
 
@@ -46,7 +53,7 @@ class EpgSpiderMiddleware(object):
         # or Item objects.
         pass
 
-    def process_start_requests(start_requests, spider):
+    def process_start_requests(self, start_requests, spider):
         # Called with the start requests of the spider, and works
         # similarly to the process_spider_output() method, except
         # that it doesn’t have a response associated.
@@ -57,13 +64,14 @@ class EpgSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
-"""
 
 
 class ProxyMiddleware(object):
+    """ 代理 download middleware，为不同类型的爬虫配置不同类型的代理 """
+
     def __init__(self, server):
+        """ 初始化加载 redis client """
         self.server = server
-        print('ProxyMiddleware init...')
 
     @classmethod
     def getRedisClient(cls, settings):
@@ -74,7 +82,6 @@ class ProxyMiddleware(object):
     def from_crawler(cls, crawler):
         return cls.getRedisClient(crawler.settings)
 
-    # overwrite process request
     def process_request(self, request, spider):
         # Set the location of the proxy
         if spider.name == 'proxy_spider':
@@ -82,8 +89,7 @@ class ProxyMiddleware(object):
             # pass
         else:
             ip_pool = self.server.smembers('proxy_set')
-            request.meta['proxy'] = 'http://' + random.choice(list(ip_pool))
-            print(spider.name + ' is using proxy ' + request.meta['proxy'])
+            request.meta['proxy'] = random.choice(list(ip_pool))
 
             # Use the following lines if your proxy requires authentication
             # proxy_user_pass = "USERNAME:PASSWORD"

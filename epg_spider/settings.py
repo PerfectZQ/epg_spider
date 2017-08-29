@@ -21,7 +21,7 @@ NEWSPIDER_MODULE = 'epg_spider.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 256
+CONCURRENT_REQUESTS = 128
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -54,16 +54,17 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-# SPIDER_MIDDLEWARES = {
-#     # 'epg_spider.middlewares.EpgSpiderSpiderMiddleware': 543,
-# }
+SPIDER_MIDDLEWARES = {
+
+}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    # 'epg_spider.middlewares.EpgSpiderMiddleware': 543,
     'epg_spider.middlewares.ProxyMiddleware': 125,
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 542,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+    'epg_spider.rewrite2redis.ReWrite2RedisMiddleware': 550,
+
 }
 
 # Enable or disable extensions
@@ -151,7 +152,7 @@ REDIS_PORT = 7001
 # Specify the full Redis URL for connecting (optional).
 # If set, this takes precedence over the REDIS_HOST and REDIS_PORT settings.
 # REDIS_URL = 'redis://user:pass@hostname:9001'
-REDIS_URL = 'redis://10.4.121.202:6379'
+# REDIS_URL = 'redis://10.4.121.202:6379'
 
 # Custom redis client parameters (i.e.: socket timeout, etc.)
 # REDIS_PARAMS  = {}

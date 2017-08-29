@@ -9,13 +9,8 @@ import scrapy_redis
 from twisted.internet.threads import deferToThread
 
 
-class EpgSpiderPipeline(object):
-    def process_item(self, item, spider):
-        return item
-
-
 class ProxyPipeline(object):
-    """将存活的proxy存入redis"""
+    """ 将爬取的proxy存入redis集合 """
 
     def __init__(self, server):
         """Initialize pipeline.
