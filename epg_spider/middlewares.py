@@ -81,7 +81,7 @@ class ProxyMiddleware(object):
             request.meta['proxy'] = "http://10.4.125.134:819"
             # pass
         else:
-            ip_pool = self.server.smembers('proxy_set_test')
+            ip_pool = self.server.smembers('proxy_set')
             request.meta['proxy'] = 'http://' + random.choice(list(ip_pool))
 
             # Use the following lines if your proxy requires authentication
