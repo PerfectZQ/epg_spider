@@ -11,7 +11,7 @@ import json
 class EpgRedisSpider2(RedisSpider):
     name = 'epgspider_redis2'
     allowed_domains = ["cctv.com"]
-    redis_key = 'testepg'
+    redis_key = 'programList:starturls'
 
     def parse(self, response):
         # label_a = response.xpath("//h4/strong/a/text()").extract()
