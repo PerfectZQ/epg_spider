@@ -83,6 +83,7 @@ class ProxyMiddleware(object):
         else:
             ip_pool = self.server.smembers('proxy_set')
             request.meta['proxy'] = 'http://' + random.choice(list(ip_pool))
+            print(spider.name + ' is using proxy ' + request.meta['proxy'])
 
             # Use the following lines if your proxy requires authentication
             # proxy_user_pass = "USERNAME:PASSWORD"
