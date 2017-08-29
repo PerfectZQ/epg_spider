@@ -48,7 +48,6 @@ DEFAULT_REQUEST_HEADERS = {
     'Accept-Language': 'zh-CN,zh;q=0.8',
     'Cache-Control': 'max-age=0',
     'Connection': 'keep-alive',
-    'Host': 'search.cctv.com',
     'Upgrade-Insecure-Requests': '1',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
 }
@@ -66,18 +65,6 @@ DOWNLOADER_MIDDLEWARES = {
     'epg_spider.middlewares.ProxyMiddleware': 125,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 542,
 }
-
-# IP代理池，List，不能使用set集合，是因为使用 random.choince() 会出现
-# TypeError: 'set' object does not support indexing
-IPPOOL = [
-    "124.239.177.85:8080",
-    "182.90.92.212:8123",
-    "117.12.168.206:53281",
-    "222.243.213.117:53281",
-    "175.16.65.24:80",
-    "110.73.4.185:8123",
-    "27.211.133.19:8118"
-]
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

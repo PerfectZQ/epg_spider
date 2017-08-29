@@ -43,27 +43,28 @@ class ProxyPipeline(object):
         return deferToThread(self._process_item, item, spider)
 
     def _process_item(self, item, spider):
-        key = 'proxy_set_test'
-        proxy = item['proxy_address']
-        proxies = {'http': proxy}
-        headers = {
-            'Accept': '*/*',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36',
-            'Accept-Encoding': 'gzip, deflate, sdch',
-            'Accept-Language': 'zh-CN,zh;q=0.8'
-        }
-        try:
-            """ 延迟大于2秒的代理就算超时 """
-            status_code = requests.get('http://search.cctv.com/', proxies=proxies, timeout=2,
-                                       headers=headers).status_code
-        except:
-            """ I don't want to see the fucking errors """
-            pass
-        else:
-            if status_code == 200:
-                print(proxy + ' test success')
-                self.server.sadd(key, proxy)
-                return item
+        if spider.name == 'proxy_spider':
+            key = 'proxy_set'
+            proxy = item['proxy_address']
+            proxies = {'http': proxy}
+            headers = {
+                'Accept': '*/*',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36',
+                'Accept-Encoding': 'gzip, deflate, sdch',
+                'Accept-Language': 'zh-CN,zh;q=0.8'
+            }
+            try:
+                """ 延迟大于2秒的代理就算超时 """
+                status_code = requests.get('http://search.cctv.com/', proxies=proxies, timeout=2,
+                                           headers=headers).status_code
+            except:
+                """ I just don't want to see the fucking errors """
+                pass
+            else:
+                if status_code == 200:
+                    print(proxy + ' test success')
+                    self.server.sadd(key, proxy)
+                    return item
 
     """
     def process_item(self, item, spider):
