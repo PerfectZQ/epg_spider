@@ -14,6 +14,9 @@ BOT_NAME = 'epg_spider'
 SPIDER_MODULES = ['epg_spider.spiders']
 NEWSPIDER_MODULE = 'epg_spider.spiders'
 
+# 允许所有的 HTTP 状态码
+HTTPERROR_ALLOW_ALL = True
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'epg_spider (+http://www.yourdomain.com)'
 
