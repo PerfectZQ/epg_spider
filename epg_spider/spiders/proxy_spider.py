@@ -32,3 +32,11 @@ class ProxySpider(scrapy.Spider):
         ports = response.xpath('//*[@id="ip_list"]/tr/td[3]/text()').extract()
         for ip, port in zip(ips, ports):
             yield ProxyAddress(proxy_address='http://%s:%s' % (ip, port))
+
+    @staticmethod
+    def close(spider, reason):
+        # 当爬虫关闭后，再度启动爬虫，循环爬取代理
+        closed = getattr(spider, 'closed', None)
+        spider.crawl.start()
+        if callable(closed):
+            return closed(reason)
