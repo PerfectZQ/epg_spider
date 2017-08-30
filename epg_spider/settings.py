@@ -110,7 +110,7 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 # SCHEDULER_SERIALIZER = "scrapy_redis.picklecompat"
 
 # Don't cleanup redis queues, allows to pause/resume crawls.
-SCHEDULER_PERSIST = True
+SCHEDULER_PERSIST = False
 
 # Schedule requests using a priority queue. (default)
 # SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
