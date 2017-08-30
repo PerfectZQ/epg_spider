@@ -105,6 +105,7 @@ class ProxyFilterMiddleware(object):
             pass
         else:
             # 如果需要等待代理，并且request中代理为None(代理池中的代理已经用尽)，重新发送 request，直到有可用代理
+            print ('proxy pool is null , %(request.url)s will request once more')
             return request
 
     def process_response(self, request, response, spider):
