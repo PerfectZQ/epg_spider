@@ -105,7 +105,7 @@ class ProxyFilterMiddleware(object):
             pass
         else:
             # 如果需要等待代理，并且request中代理为None(代理池中的代理已经用尽)，重新发送 request，直到有可用代理
-            print ('proxy pool is null , %(request.url)s will request once more')
+            print ('proxy pool is null , %s will request once more' % request)
             return request
 
     def process_response(self, request, response, spider):
@@ -167,7 +167,7 @@ class ProxyFilterMiddleware(object):
         if failed_times < self.proxy_failed_times:
             self.server.hset(self.proxy_failed_hashmap, proxy, failed_times + 1)
             logger.debug(
-                "current proxy is %(proxy)s, this proxy has failed %(failed_times)d times",
+                "current proxy is %s, this proxy has failed %d times" % (proxy, failed_times),
                 {'request': request, 'retries': retries, 'reason': reason},
                 extra={'spider': spider})
         else:

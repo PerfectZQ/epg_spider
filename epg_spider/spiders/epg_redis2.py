@@ -25,7 +25,7 @@ class EpgRedisSpider2(RedisSpider):
             # 继承自 RedisMixin(object)
             self.server.hmset('program_type_hm', dict(epg))
         else:
-            url = response.request.url.find("=")
+            url = response.request.url
             program = url[url.find('=') + 1:url.find('$')]
             print("I can't find the program %s" % program)
 
