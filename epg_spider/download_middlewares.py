@@ -38,14 +38,14 @@ class ProxyMiddleware(object):
             # pass
         else:
             proxy_set = self.server.smembers(self.proxy_pool)
-            # request.meta['proxy'] = random.choice(list(proxy_set))
-            proxies = ['http://123.123.32.1:8080',
-                       'http://123.123.32.2:8080',
-                       'http://123.123.32.3:8080',
-                       'http://123.123.32.4:8080',
-                       'http://123.123.32.5:8080']
-            proxy = random.choice(proxies)
-            request.meta['proxy'] = proxy
+            request.meta['proxy'] = random.choice(list(proxy_set))
+            # proxies = ['http://123.123.32.1:8080',
+            #            'http://123.123.32.2:8080',
+            #            'http://123.123.32.3:8080',
+            #            'http://123.123.32.4:8080',
+            #            'http://123.123.32.5:8080']
+            # proxy = random.choice(proxies)
+            # request.meta['proxy'] = proxy
 
             # Use the following lines if your proxy requires authentication
             # proxy_user_pass = "USERNAME:PASSWORD"
