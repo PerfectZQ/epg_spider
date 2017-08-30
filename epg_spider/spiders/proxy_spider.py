@@ -23,6 +23,9 @@ class ProxySpider(scrapy.Spider):
             request = Request(url=url)
             # 不走ProxyFilterMiddleware，不重新发送request，失败了就失败了
             request.meta['dont_retry'] = True
+            # 代理池中为空的时候不等待代理，因为爬取代理的爬虫不使用爬取的代理
+            request.meta['dont_wait_proxy'] = True
+            request.dont_filter = True
             yield request
 
     def parse(self, response):
@@ -32,11 +35,3 @@ class ProxySpider(scrapy.Spider):
         ports = response.xpath('//*[@id="ip_list"]/tr/td[3]/text()').extract()
         for ip, port in zip(ips, ports):
             yield ProxyAddress(proxy_address='http://%s:%s' % (ip, port))
-
-    @staticmethod
-    def close(spider, reason):
-        # 当爬虫关闭后，再度启动爬虫，循环爬取代理
-        closed = getattr(spider, 'closed', None)
-        spider.crawl.start()
-        if callable(closed):
-            return closed(reason)

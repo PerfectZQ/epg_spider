@@ -34,8 +34,8 @@ class ProxyMiddleware(object):
     def process_request(self, request, spider):
         # Set the location of the proxy
         if spider.name == 'proxy_spider':
-            request.meta['proxy'] = "http://10.4.125.134:819"
-            # pass
+            # request.meta['proxy'] = "http://10.4.125.134:819"
+            pass
         else:
             proxy_set = self.server.smembers(self.proxy_pool)
             if proxy_set:
@@ -43,11 +43,11 @@ class ProxyMiddleware(object):
             else:
                 request.meta['proxy'] = None
 
-            # Use the following lines if your proxy requires authentication
-            # proxy_user_pass = "USERNAME:PASSWORD"
-            # setup basic authentication for the proxy
-            # encoded_user_pass = base64.b64encode(proxy_user_pass)
-            # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass
+                # Use the following lines if your proxy requires authentication
+                # proxy_user_pass = "USERNAME:PASSWORD"
+                # setup basic authentication for the proxy
+                # encoded_user_pass = base64.b64encode(proxy_user_pass)
+                # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass
 
 
 class ProxyFilterMiddleware(object):
@@ -99,7 +99,7 @@ class ProxyFilterMiddleware(object):
             理该异常，则request的errback(Request.errback)方法会被调用。如果没有代码处理
             抛出的异常，则该异常被忽略且不记录(不同于其他异常那样)。
         """
-        if not request.meta['proxy']:
+        if not request.meta.get('dont_wait_proxy', False) and not request.meta['proxy']:
             # 如果代理池中没有代理，重新发送 request，等待可用代理
             return request
 
