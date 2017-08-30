@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
+import random
+
 import scrapy
-import scrapy_redis
 from scrapy import Request
+from scrapy.utils.project import get_project_settings
 
 from epg_spider.items import ProxyAddress
+
+
+class ProxySpiderSwitch(object):
+    """ 代理爬虫开关 """
+    flag = True
 
 
 class ProxySpider(scrapy.Spider):
@@ -13,12 +20,11 @@ class ProxySpider(scrapy.Spider):
     # start_urls = ['http://www.xicidaili.com/wt/']
 
     def start_requests(self):
-        # """ 开始爬取新的代理时先清空redis中的代理数据 """
-        # settings = self.settings
-        # server = scrapy_redis.connection.get_redis_from_settings(settings)
-        # server.delete('proxy_set_test')
-        # 爬取前10页代理
-        for page in xrange(1, 100):
+        # 随机爬取前100页代理
+        flag = True
+        while flag:
+            flag = ProxySpiderSwitch.flag
+            page = random.choice(range(1, 100))
             url = 'http://www.xicidaili.com/wt/%d' % page
             request = Request(url=url)
             # 不走ProxyFilterMiddleware，不重新发送request，失败了就失败了

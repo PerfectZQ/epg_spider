@@ -9,7 +9,7 @@ settings = get_project_settings()
 crawler = CrawlerProcess(settings)
 # 节目单爬虫
 # crawler.crawl(EpgRedisSpider)
-# crawler.crawl(EpgRedisSpider2)
+crawler.crawl(EpgRedisSpider2)
 # 代理爬虫
 crawler.crawl(ProxySpider)
 crawler.start()

@@ -2,6 +2,7 @@
 
 from scrapy_redis.spiders import RedisSpider
 from epg_spider.items import EPGItem
+from epg_spider.spiders.proxy_spider import ProxySpiderSwitch
 
 
 class EpgRedisSpider2(RedisSpider):
@@ -27,3 +28,11 @@ class EpgRedisSpider2(RedisSpider):
             url = response.request.url.find("=")
             program = url[url.find('=') + 1:url.find('$')]
             print("I can't find the program %s" % program)
+
+    @staticmethod
+    def close(spider, reason):
+        # 关闭 ProxySpider
+        ProxySpiderSwitch.flag = False
+        closed = getattr(spider, 'closed', None)
+        if callable(closed):
+            return closed(reason)
