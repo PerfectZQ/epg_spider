@@ -5,19 +5,6 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
-import logging
-
-from twisted.internet import defer
-from twisted.internet.error import TimeoutError, DNSLookupError, \
-    ConnectionRefusedError, ConnectionDone, ConnectError, \
-    ConnectionLost, TCPTimedOutError
-from twisted.web.client import ResponseFailed
-
-from scrapy.core.downloader.handlers.http11 import TunnelError
-import random
-
-import scrapy_redis
-
 from scrapy import signals
 
 
@@ -64,6 +51,3 @@ class EpgSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
-
-
-
