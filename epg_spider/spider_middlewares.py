@@ -66,33 +66,4 @@ class EpgSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class ProxyMiddleware(object):
-    """ 代理 download middleware，为不同类型的爬虫配置不同类型的代理 """
 
-    def __init__(self, server):
-        """ 初始化加载 redis client """
-        self.server = server
-
-    @classmethod
-    def getRedisClient(cls, settings):
-        params = {'server': scrapy_redis.connection.get_redis_from_settings(settings)}
-        return cls(**params)
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls.getRedisClient(crawler.settings)
-
-    def process_request(self, request, spider):
-        # Set the location of the proxy
-        if spider.name == 'proxy_spider':
-            request.meta['proxy'] = "http://10.4.125.134:819"
-            # pass
-        else:
-            ip_pool = self.server.smembers('proxy_set')
-            request.meta['proxy'] = random.choice(list(ip_pool))
-
-            # Use the following lines if your proxy requires authentication
-            # proxy_user_pass = "USERNAME:PASSWORD"
-            # setup basic authentication for the proxy
-            # encoded_user_pass = base64.b64encode(proxy_user_pass)
-            # request.headers['Proxy-Authorization'] = 'Basic ' + encoded_user_pass

@@ -18,9 +18,12 @@ class ProxySpider(scrapy.Spider):
         # server = scrapy_redis.connection.get_redis_from_settings(settings)
         # server.delete('proxy_set_test')
         # 爬取前10页代理
-        for page in xrange(1, 10):
+        for page in xrange(1, 100):
             url = 'http://www.xicidaili.com/wt/%d' % page
-            yield Request(url=url)
+            request = Request(url=url)
+            # 不走ProxyFilterMiddleware，不重新发送request，失败了就失败了
+            request.meta['dont_retry'] = True
+            yield request
 
     def parse(self, response):
         """/tr[@class]/td[2]/text()"""

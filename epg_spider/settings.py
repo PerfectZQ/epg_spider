@@ -1,20 +1,10 @@
 # -*- coding: utf-8 -*-
-
-# Scrapy settings for epg_spider project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     http://doc.scrapy.org/en/latest/topics/settings.html
-#     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-
 BOT_NAME = 'epg_spider'
 
 SPIDER_MODULES = ['epg_spider.spiders']
 NEWSPIDER_MODULE = 'epg_spider.spiders'
 
-# 允许所有的 HTTP 状态码
+# 允许所有的 HTTP 状态码，不走 http_error middleware
 HTTPERROR_ALLOW_ALL = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -35,7 +25,7 @@ CONCURRENT_REQUESTS = 128
 # CONCURRENT_REQUESTS_PER_IP = 16
 CONCURRENT_REQUESTS_PER_IP = 16
 # The amount of time (in secs) that the downloader will wait before timing out. Default: 180
-DOWNLOAD_TIMEOUT = 30
+DOWNLOAD_TIMEOUT = 60
 
 # Disable cookies (enabled by default)
 # 算是防爬策略之一，不启用cookies middleware，不想web server发送cookies
@@ -64,17 +54,16 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'epg_spider.middlewares.ProxyMiddleware': 1,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-    'epg_spider.rewrite2redis.ReWrite2RedisMiddleware': 550,
-
+    'epg_spider.download_middlewares.ProxyMiddleware': 1,
+    'epg_spider.download_middlewares.ProxyFilterMiddleware': 550,
 }
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
-# EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-# }
+EXTENSIONS = {
+    # 'scrapy.extensions.telnet.TelnetConsole': None,
+}
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
@@ -121,7 +110,7 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 # SCHEDULER_SERIALIZER = "scrapy_redis.picklecompat"
 
 # Don't cleanup redis queues, allows to pause/resume crawls.
-SCHEDULER_PERSIST = False
+SCHEDULER_PERSIST = True
 
 # Schedule requests using a priority queue. (default)
 # SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
@@ -156,6 +145,15 @@ REDIS_PORT = 7001
 # If set, this takes precedence over the REDIS_HOST and REDIS_PORT settings.
 # REDIS_URL = 'redis://user:pass@hostname:9001'
 # REDIS_URL = 'redis://10.4.121.202:6379'
+
+# 代理池的 redis key (set类型)
+PROXY_POOL = 'proxy_set'
+
+# 记录失败的代理IP redis key （hash map 类型）
+PROXY_FAILED_HASHMAP = 'failed_proxy_hm'
+
+# 每个代理最多请求失败的次数
+PROXY_FAILED_TIMES = 3
 
 # Custom redis client parameters (i.e.: socket timeout, etc.)
 # REDIS_PARAMS  = {}

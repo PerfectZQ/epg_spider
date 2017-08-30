@@ -6,27 +6,30 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import requests
 import scrapy_redis
+from scrapy.exceptions import NotConfigured
 from twisted.internet.threads import deferToThread
 
 
 class ProxyPipeline(object):
     """ 将爬取的proxy存入redis集合 """
 
-    def __init__(self, server):
-        """Initialize pipeline.
-
-        Parameters
-        ----------
-        server : StrictRedis
-            Redis client instance.
-        """
+    def __init__(self, server, proxy_pool, proxy_failed_hashmap):
+        # redis客户端
         self.server = server
+        # 代理池
+        self.proxy_pool = proxy_pool
+        # 失败代理记录
+        self.proxy_failed_hashmap = proxy_failed_hashmap
 
     @classmethod
     def from_settings(cls, settings):
         """ cls 代表当前类本身，cls(args*)相当于调用当前类的__init__(args*)方法"""
+        if not settings.get('PROXY_POOL') or not settings.get('PROXY_FAILED_HASHMAP'):
+            raise NotConfigured
         params = {
             'server': scrapy_redis.connection.get_redis_from_settings(settings),
+            'proxy_pool': settings.get('PROXY_POOL'),
+            'proxy_failed_hashmap': settings.get('PROXY_FAILED_HASHMAP')
         }
         return cls(**params)
 
@@ -39,7 +42,6 @@ class ProxyPipeline(object):
 
     def _process_item(self, item, spider):
         if spider.name == 'proxy_spider':
-            key = 'proxy_set'
             proxy = item['proxy_address']
             proxies = {'http': proxy}
             headers = {
@@ -49,8 +51,8 @@ class ProxyPipeline(object):
                 'Accept-Language': 'zh-CN,zh;q=0.8'
             }
             try:
-                """ 延迟大于2秒的代理就算超时 """
-                status_code = requests.get('http://search.cctv.com/', proxies=proxies, timeout=2,
+                """ 延迟大于3秒的代理就算超时 """
+                status_code = requests.get('http://search.cctv.com/', proxies=proxies, timeout=3,
                                            headers=headers).status_code
             except:
                 """ I just don't want to see the fucking errors """
@@ -58,7 +60,9 @@ class ProxyPipeline(object):
             else:
                 if status_code == 200:
                     print(proxy + ' test success')
-                    self.server.sadd(key, proxy)
+                    self.server.sadd('proxy_set', proxy)
+                    # 并将代理的失败次数置为0
+                    self.server.hset('failed_proxy_hm', proxy, 0)
                     return item
 
     """
