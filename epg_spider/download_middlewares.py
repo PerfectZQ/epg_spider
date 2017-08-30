@@ -38,14 +38,10 @@ class ProxyMiddleware(object):
             # pass
         else:
             proxy_set = self.server.smembers(self.proxy_pool)
-            request.meta['proxy'] = random.choice(list(proxy_set))
-            # proxies = ['http://123.123.32.1:8080',
-            #            'http://123.123.32.2:8080',
-            #            'http://123.123.32.3:8080',
-            #            'http://123.123.32.4:8080',
-            #            'http://123.123.32.5:8080']
-            # proxy = random.choice(proxies)
-            # request.meta['proxy'] = proxy
+            if proxy_set:
+                request.meta['proxy'] = random.choice(list(proxy_set))
+            else:
+                request.meta['proxy'] = None
 
             # Use the following lines if your proxy requires authentication
             # proxy_user_pass = "USERNAME:PASSWORD"
@@ -103,7 +99,9 @@ class ProxyFilterMiddleware(object):
             理该异常，则request的errback(Request.errback)方法会被调用。如果没有代码处理
             抛出的异常，则该异常被忽略且不记录(不同于其他异常那样)。
         """
-        return None
+        if not request.meta['proxy']:
+            # 如果代理池中没有代理，重新发送 request，等待可用代理
+            return request
 
     def process_response(self, request, response, spider):
         """
