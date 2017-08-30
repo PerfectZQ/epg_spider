@@ -170,7 +170,7 @@ class ProxyFilterMiddleware(object):
                 {'request': request, 'retries': retries, 'reason': reason},
                 extra={'spider': spider})
         else:
-            self.server.srem(self.proxy_pool)
+            self.server.srem(self.proxy_pool, proxy)
             logger.debug(
                 "current proxy is %(proxy)s, this proxy has failed %(failed_times)d times, removed from proxy pool",
                 {'request': request, 'retries': retries, 'reason': reason},
