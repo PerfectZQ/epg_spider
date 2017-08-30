@@ -60,8 +60,9 @@ class ProxyFilterMiddleware(object):
                            IOError, TunnelError)
 
     def __init__(self, settings):
-        if not settings.getbool('RETRY_ENABLED') or not settings.get('PROXY_POOL') or not settings.get(
-                'PROXY_FAILED_HASHMAP'):
+        if not settings.getbool('RETRY_ENABLED') \
+                or not settings.get('PROXY_POOL') \
+                or not settings.get('PROXY_FAILED_HASHMAP'):
             raise NotConfigured
         self.retry_http_codes = set(int(x) for x in settings.getlist('RETRY_HTTP_CODES'))
         self.priority_adjust = settings.getint('RETRY_PRIORITY_ADJUST')
@@ -99,8 +100,11 @@ class ProxyFilterMiddleware(object):
             理该异常，则request的errback(Request.errback)方法会被调用。如果没有代码处理
             抛出的异常，则该异常被忽略且不记录(不同于其他异常那样)。
         """
-        if not request.meta.get('dont_wait_proxy', False) and not request.meta['proxy']:
-            # 如果代理池中没有代理，重新发送 request，等待可用代理
+        if request.meta.get('dont_wait_proxy', False) or request.meta['proxy']:
+            # 不需要等待代理，或者request中代理不为None
+            pass
+        else:
+            # 如果需要等待代理，并且request中代理为None(代理池中的代理已经用尽)，重新发送 request，直到有可用代理
             return request
 
     def process_response(self, request, response, spider):
