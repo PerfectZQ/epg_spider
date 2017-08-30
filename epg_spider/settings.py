@@ -64,7 +64,7 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'epg_spider.middlewares.ProxyMiddleware': 125,
+    'epg_spider.middlewares.ProxyMiddleware': 1,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
     'epg_spider.rewrite2redis.ReWrite2RedisMiddleware': 550,
 
