@@ -73,7 +73,7 @@ class ProxyFilterMiddleware(object):
         # 失败代理记录
         self.proxy_failed_hashmap = settings.get('PROXY_FAILED_HASHMAP')
         # 每个代理最多请求失败的次数
-        self.proxy_failed_times = settings.get('PROXY_FAILED_TIMES')
+        self.proxy_failed_times = settings.getint('PROXY_FAILED_TIMES')
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -163,7 +163,8 @@ class ProxyFilterMiddleware(object):
             extra={'spider': spider})
         proxy = request.meta['proxy']
         # 记录代理失败次数
-        failed_times = self.server.hget(self.proxy_failed_hashmap, proxy)
+        failed_times = int(self.server.hget(self.proxy_failed_hashmap, proxy))
+        print
         if failed_times < self.proxy_failed_times:
             self.server.hset(self.proxy_failed_hashmap, proxy, failed_times + 1)
             logger.debug(
@@ -173,7 +174,7 @@ class ProxyFilterMiddleware(object):
         else:
             self.server.srem(self.proxy_pool, proxy)
             logger.debug(
-                "current proxy is %(proxy)s, this proxy has failed %(failed_times)d times, removed from proxy pool",
+                "current proxy is %s, this proxy has failed %d times, removed from proxy pool" % (proxy, failed_times),
                 {'request': request, 'retries': retries, 'reason': reason},
                 extra={'spider': spider})
 
