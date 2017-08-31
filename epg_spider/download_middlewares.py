@@ -164,7 +164,6 @@ class ProxyFilterMiddleware(object):
         proxy = request.meta['proxy']
         # 记录代理失败次数
         failed_times = int(self.server.hget(self.proxy_failed_hashmap, proxy))
-        print
         if failed_times < self.proxy_failed_times:
             self.server.hset(self.proxy_failed_hashmap, proxy, failed_times + 1)
             logger.debug(
