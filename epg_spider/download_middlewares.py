@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 import random
+import urllib
 
 import scrapy_redis
+import time
 from twisted.internet import defer
 from twisted.internet.error import TimeoutError, DNSLookupError, \
     ConnectionRefusedError, ConnectionDone, ConnectError, \
@@ -33,9 +35,10 @@ class ProxyMiddleware(object):
 
     def process_request(self, request, spider):
         # Set the location of the proxy
-        if spider.name == 'proxy_spider':
-            # request.meta['proxy'] = "http://10.4.125.134:819"
-            pass
+        # if spider.name == 'proxy_spider':
+        if spider.name == 'qidianSpider':
+            request.meta['proxy'] = "http://10.4.125.134:819"
+            # pass
         else:
             proxy_set = self.server.smembers(self.proxy_pool)
             if proxy_set:
@@ -105,8 +108,14 @@ class ProxyFilterMiddleware(object):
             pass
         else:
             # 如果需要等待代理，并且request中代理为None(代理池中的代理已经用尽)，重新发送 request，直到有可用代理
-            print ('proxy pool is null , %s will request once more' % request)
-            return request
+            print ('proxy pool is null , %s will retry request once more in 10 seconds' % urllib.unquote(str(request)))
+            time.sleep(10)
+            retry_request = request.copy()
+            # 不会被当成重复URL过滤掉
+            retry_request.dont_filter = True
+            retry_request.priority = request.priority + self.priority_adjust
+            print(retry_request.priority)
+            return retry_request
 
     def process_response(self, request, response, spider):
         """
@@ -158,7 +167,8 @@ class ProxyFilterMiddleware(object):
         retries = request.meta.get('retry_times', 0) + 1
         stats = spider.crawler.stats
         logger.debug(
-            "Retrying %(request)s, %(reason)s, and this request has failed %(retries)d times",
+            "Retrying %s, %s, and this request has failed %d times" % (
+                urllib.unquote(str(request)), reason, retries),
             {'request': request, 'retries': retries, 'reason': reason},
             extra={'spider': spider})
         proxy = request.meta['proxy']

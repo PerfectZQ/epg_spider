@@ -7,9 +7,10 @@ from epg_spider.spiders.proxy_spider import ProxySpider
 
 settings = get_project_settings()
 crawler = CrawlerProcess(settings)
+# 代理爬虫
+crawler.crawl(ProxySpider)
 # 节目单爬虫
 # crawler.crawl(EpgRedisSpider)
 crawler.crawl(EpgRedisSpider2)
-# 代理爬虫
-crawler.crawl(ProxySpider)
+
 crawler.start()
